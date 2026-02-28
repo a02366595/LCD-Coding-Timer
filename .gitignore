@@ -1,0 +1,18 @@
+# Keil build folders and files
+Objects/
+Listings/
+DebugConfig/
+*.crf
+*.d
+*.o
+*.hex
+*.axf
+*.htm
+*.lnp
+*.sct
+*.dep
+*.build_log.htm
+
+# Keep the main project file, ignore user-specific settings
+*.uvoptx
+*.uvguix.*
