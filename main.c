@@ -3,6 +3,7 @@
 #include "system_stm32l4xx.h"
 #include "interrupts.h"
 #include "core_cm4.h"
+#include "health_logic.h"
 
 int main(void){
 
