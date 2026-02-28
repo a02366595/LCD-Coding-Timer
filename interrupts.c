@@ -87,9 +87,10 @@ void SysTick_Handler(void) {
 	if(timerEnable) {
 		if(T == 9) {
 			T = 0;
+            Health_Tick(); // Calling your logic!
 			if(S2 == 9) {
 				S2 = 0;
-				if(S1 == 5) {
+				if(S1 == 9) {
 					S1 = 0;
 					if(M2 == 9) {
 						M2 = 0;
@@ -103,18 +104,7 @@ void SysTick_Handler(void) {
 		
 	} //end if timer enable
 	
-	time[0] = M1 + 48; //convert integer to character
-	time[1] = M2 + 48;
-	time[2] = ':';
-	time[3] = S1 + 48;
-	time[4] = S2 + 48;
-	time[5] = '.';
-	time[6] = T + 48;
-	LCD_DisplayString(0, time);
-	LCD_DisplayString(1, 
-	
-	
-}
+} // Made some changes here
 void EXTI9_5_IRQHandler(void)
 {
 	

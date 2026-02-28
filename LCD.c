@@ -12,8 +12,8 @@
 void delay_ms(unsigned int ms) {
 	//16000 cycles is 1 ms (hypothetically)
 	//16 MHz clock frequency
-	unsigned int clkdiv = 0;
-	while(clkdiv<(400 * ms)) {
+	volatile unsigned int clkdiv = 0;
+	while(clkdiv<(4000 * ms)) {
 		clkdiv++;
 	}
 	
@@ -97,6 +97,7 @@ void LCD_Init(void){
 void LCD_Clear(void){
   //clear LCD screen
 	LCD_WriteCom(0x01);
+	delay_ms(2);
 }
 
 void LCD_DisplayString(unsigned int line, unsigned char *ptr) {
