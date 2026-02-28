@@ -10,7 +10,7 @@ int main(void){
     LCD_Init();
     LCD_Clear();
     buttonGPIOInit();
-    SysTick_Init(400000); // Interrupt fires in the background
+    SysTick_Init(1600000); // Interrupt fires in the background
     EXTI_Init();
 
     Health_Init(); // 1. Start your software logic!

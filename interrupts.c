@@ -66,6 +66,9 @@ void EXTI_Init(void) {
 	//set exti 8 9 10 priority to 1
 	NVIC_SetPriority(EXTI9_5_IRQn, 2);
 	NVIC_SetPriority(EXTI15_10_IRQn, 1);
+	EXTI->PR1 |= EXTI_PR1_PIF8;
+  EXTI->PR1 |= EXTI_PR1_PIF9;
+	EXTI->PR1 |= EXTI_PR1_PIF10; // clear the interrupt flags
 	
 	//enable interrups exti9 to 5 and exti 15 - 10
 	NVIC_EnableIRQ(EXTI9_5_IRQn);
@@ -82,42 +85,49 @@ void buttonGPIOInit(void) {
 }
 
 void SysTick_Handler(void) {
+    // FIXED: Let 'T' run continuously so Health_Tick can process heals during breaks!
+    if(T == 9) {
+        T = 0;
+        Health_Tick(); // Calling your logic every 1 real-world second!
+        
+        // Only increment the stopwatch math if the session is active
+        if(timerEnable) {
+            if(S2 == 9) {
+                S2 = 0;
+                if(S1 == 9) {
+                    S1 = 0;
+                    if(M2 == 9) {
+                        M2 = 0;
+                        if(M1 == 9) {
+                            M1 = 0;
+                        } else M1++;
+                    } else M2++;
+                } else S1++;
+            } else S2++;
+        }
+    } else T++;
+} 
 
-	//timer decrements from input value.
-	if(timerEnable) {
-		if(T == 9) {
-			T = 0;
-            Health_Tick(); // Calling your logic!
-			if(S2 == 9) {
-				S2 = 0;
-				if(S1 == 9) {
-					S1 = 0;
-					if(M2 == 9) {
-						M2 = 0;
-						if(M1 == 9) {
-							M1 = 0;
-						} else M1++;
-					} else M2++;
-				} else S1++;
-			} else S2++;
-		} else T++;
-		
-	} //end if timer enable
-	
-} // Made some changes here
-void EXTI9_5_IRQHandler(void)
-{
-	
-	//if green button pressed, activate timer count
-	if(!((GPIOB->IDR & pb8) == pb8))
-		timerEnable = 1;
-	
-	//if blue button pressed, drink water.
-	if(!((GPIOB->IDR & pb9) == pb9))
-		Health_QuickActionPressed();
-	//clear interrupt flags
-	EXTI->PR1 |= EXTI_PR1_PIF8;
-	EXTI->PR1 |= EXTI_PR1_PIF9;
+void EXTI9_5_IRQHandler(void) {
+    // If green button pressed (PB8)
+    if(!((GPIOB->IDR & pb8) == pb8)) {
+        if (timerEnable == 0) {
+            timerEnable = 1; // First press: Start the session
+        } else {
+            Health_BreakTogglePressed(); // Subsequent presses: Toggle Break/Code
+        }
+				EXTI->PR1 = EXTI_PR1_PIF8;
+    }
+    
+    // If blue button pressed (PB9), drink water.
+    if(!((GPIOB->IDR & pb9) == pb9)) {
+        Health_QuickActionPressed();
+				EXTI->PR1 = EXTI_PR1_PIF9;
+    }
+        
+    // Clear interrupt flags
+    EXTI->PR1 |= EXTI_PR1_PIF8;
+    EXTI->PR1 |= EXTI_PR1_PIF9;
 }
 void EXTI15_10_IRQHandler(void) {
 	//if red button pressed, end coding session and reset time probably. right adam?
