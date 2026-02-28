@@ -10,23 +10,38 @@ void Health_Init(void) {
     current_hp = 100;
     total_session_seconds = 0;
     score_accumulator = 0;
-    current_state = STATE_IDLE;
+    current_state = STATE_CODING; // Assume we start coding right away
 }
 
 void Health_Tick(void) {
-    // We will build the decay and scoring math here
+    if (current_state == STATE_CODING) {
+        current_hp -= 1; // This drains 1HP per second. may change later.
+        if (current_hp < 0) current_hp = 0;
+    } else if (current_state == STATE_BREAK) {
+        current_hp += 2; //Heal 2HP per second while on break
+        if (current_hp > 100) current_hp = 100;
+    }
+    score_accumulator += current_hp;
 }
 
 void Health_QuickActionPressed(void) {
-    // Add health, cap at 100
+    if (current_state != STATE_FINISHED){
+        current_hp += 15; //Water boost
+        if (current_hp > 100) current_hp = 100;
+    }
 }
 
 void Health_BreakTogglePressed(void) {
-    // Switch between CODING and BREAK states
+    if (current_state == STATE_CODING) {
+        current_state = STATE_BREAK;
+    } else if (current_state == STATE_BREAK){
+        current_state = STATE_CODING;
+    }
 }
 
 void Health_EndSessionPressed(void) {
     // Calculate final area-under-curve score and set state to FINISHED
+    current_state = STATE_FINISHED;
 }
 
 int Health_GetCurrentHP(void) {
@@ -34,8 +49,9 @@ int Health_GetCurrentHP(void) {
 }
 
 int Health_GetFinalScore(void) {
+    if (total_session_seconds == 0) return 100;
     // Return the calculated 0-100 score
-    return 0; 
+    return (score_accumulator / total_session_seconds); 
 }
 
 SessionState Health_GetState(void) {
