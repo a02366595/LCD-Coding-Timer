@@ -7,13 +7,14 @@
 
 int main(void){
 
+	
 	System_Clock_Init();
 	LCD_Init();
 	LCD_Clear();
 	buttonGPIOInit();
 	SysTick_Init(400000);
 	EXTI_Init();
-
+	Health_Init();
 	
 	while(1);
 }

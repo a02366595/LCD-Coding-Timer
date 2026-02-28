@@ -11,5 +11,5 @@ void buttonGPIOInit(void);
 void SysTick_Init(uint32_t ticks);
 void EXTI_Init(void);
 
-
+extern volatile uint8_t current_hp;
 #endif

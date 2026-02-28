@@ -1,6 +1,7 @@
 #include "interrupts.h"
 #include "stm32l476xx.h"
 #include "LCD.h"
+#include "health_logic.h"
 //#include "startup_stm321476xx.s"
 //#include
 
@@ -88,7 +89,7 @@ void SysTick_Handler(void) {
 			T = 0;
 			if(S2 == 9) {
 				S2 = 0;
-				if(S1 == 9) {
+				if(S1 == 5) {
 					S1 = 0;
 					if(M2 == 9) {
 						M2 = 0;
@@ -110,7 +111,7 @@ void SysTick_Handler(void) {
 	time[5] = '.';
 	time[6] = T + 48;
 	LCD_DisplayString(0, time);
-	
+	LCD_DisplayString(1, 
 	
 	
 }
@@ -121,18 +122,22 @@ void EXTI9_5_IRQHandler(void)
 	if(!((GPIOB->IDR & pb8) == pb8))
 		timerEnable = 1;
 	
-	//if yellow button pressed, stop timer count
+	//if blue button pressed, drink water.
 	if(!((GPIOB->IDR & pb9) == pb9))
-		timerEnable = 0;
+		Health_QuickActionPressed();
+	//clear interrupt flags
 	EXTI->PR1 |= EXTI_PR1_PIF8;
 	EXTI->PR1 |= EXTI_PR1_PIF9;
 }
 void EXTI15_10_IRQHandler(void) {
-	//if red button pressed, reset timer
+	//if red button pressed, end coding session and reset time probably. right adam?
 	M1 = 0;
 	M2 = 0;
 	S1 = 0;
 	S2 = 0;
 	T = 0;
+	Health_EndSessionPressed();
+	
+	//clear the interrupt flag
 	EXTI->PR1 |= EXTI_PR1_PIF10;
 };
