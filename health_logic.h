@@ -22,6 +22,7 @@ void Health_Tick(void);
 void Health_QuickActionPressed(void); // e.g., Drink water
 void Health_BreakTogglePressed(void); // Step away from keyboard
 void Health_EndSessionPressed(void);  // Finish coding
+void Health_FormatDisplayString(char * buffer); 
 
 // Getters for the LCD display
 int Health_GetCurrentHP(void);
