@@ -13,7 +13,7 @@ void delay_ms(unsigned int ms) {
 	//16000 cycles is 1 ms (hypothetically)
 	//16 MHz clock frequency
 	volatile unsigned int clkdiv = 0;
-	while(clkdiv<(4000 * ms)) {
+	while(clkdiv<(400 * ms)) {
 		clkdiv++;
 	}
 	
@@ -53,6 +53,7 @@ void LCD_Init(void){
 	GPIOB->MODER |= (0x5555); //set pins 0-7 to output mode
 	
 	delay_ms(20);
+	GPIOB->ODR &= ~RS;
 //for loop that changes program to 8 bit data mode. 3 times  
 	for(int idx = 0; idx <3; idx++){
 		PutNibble(0x03);
