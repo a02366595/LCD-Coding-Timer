@@ -82,12 +82,13 @@ void buttonGPIOInit(void) {
 
 void SysTick_Handler(void) {
 
+	//timer decrements from input value.
 	if(timerEnable) {
 		if(T == 9) {
 			T = 0;
 			if(S2 == 9) {
 				S2 = 0;
-				if(S1 == 5) {
+				if(S1 == 9) {
 					S1 = 0;
 					if(M2 == 9) {
 						M2 = 0;
