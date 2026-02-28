@@ -1,7 +1,7 @@
 #include "health_logic.h"
 
 // Private internal variables
-volatile uint8_t current_hp;
+volatile int current_hp;
 static int total_session_seconds;
 static int score_accumulator;
 static SessionState current_state;
@@ -17,15 +17,19 @@ void Health_Init(void) {
 
 void Health_Tick(void) {
     if (current_state == STATE_FINISHED) return; 
-    total_session_seconds ++;
+    
+    total_session_seconds++;
 
-    if (timerEnable == 1) {
-        current_hp -= 1; // This drains 1HP per second. may change later.
-        if (current_hp < 0) current_hp = 0;
-    }else if (current_state == STATE_BREAK) {
-        current_hp += 2; //Heal 2HP per second while on break
+    if (current_state == STATE_CODING) {
+        if (timerEnable == 1) {
+            current_hp -= 1; // Drain 1HP per second
+            if (current_hp < 0) current_hp = 0;
+        }
+    } else if (current_state == STATE_BREAK) {
+        current_hp += 2; // Heal 2HP per second while on break
         if (current_hp > 100) current_hp = 100;
     }
+    
     score_accumulator += current_hp;
 }
 
@@ -66,13 +70,14 @@ SessionState Health_GetState(void) {
 #include <stdio.h> 
 
 void Health_FormatDisplayString(char* buffer){
+    // FIXED: All strings are now strictly 15 chars or less to prevent RAM crashing
     if (current_state == STATE_CODING) {
-        sprintf(buffer, "HP: %d [CODING]", current_hp);
+        sprintf(buffer, "HP:%3d [CODE]  ", current_hp);
     } else if (current_state == STATE_BREAK){
-        sprintf(buffer, "HP: %d [BREAK]", current_hp);
+        sprintf(buffer, "HP:%3d [BREAK] ", current_hp);
     } else if (current_state == STATE_FINISHED) {
-        sprintf(buffer, "Final Score: %d ", Health_GetFinalScore());
+        sprintf(buffer, "Score: %d/100  ", Health_GetFinalScore());
     } else {
-        sprintf(buffer, "Ready...         ");
+        sprintf(buffer, "Ready...       ");
     }
 }
