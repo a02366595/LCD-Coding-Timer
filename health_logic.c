@@ -14,10 +14,13 @@ void Health_Init(void) {
 }
 
 void Health_Tick(void) {
+    if (current_state == STATE_FINISHED) return; 
+    total_session_seconds ++;
+
     if (current_state == STATE_CODING) {
         current_hp -= 1; // This drains 1HP per second. may change later.
         if (current_hp < 0) current_hp = 0;
-    } else if (current_state == STATE_BREAK) {
+    }else if (current_state == STATE_BREAK) {
         current_hp += 2; //Heal 2HP per second while on break
         if (current_hp > 100) current_hp = 100;
     }
@@ -56,4 +59,18 @@ int Health_GetFinalScore(void) {
 
 SessionState Health_GetState(void) {
     return current_state;
+}
+
+#include <stdio.h> 
+
+void Health_FormatDisplayString(char* buffer){
+    if (current_state == STATE_CODING) {
+        sprintf(buffer, "HP: %d [CODING]", current_hp);
+    } else if (current_state == STATE_BREAK){
+        sprintf(buffer, "HP: %d [BREAK]", current_hp);
+    } else if (current_state == STATE_FINISHED) {
+        sprintf(buffer, "Final Score: %d ", Health_GetFinalScore());
+    } else {
+        sprintf(buffer, "Ready...         ");
+    }
 }
