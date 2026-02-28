@@ -1,23 +1,25 @@
 #include "health_logic.h"
 
 // Private internal variables
-static int current_hp;
+volatile uint8_t current_hp;
 static int total_session_seconds;
 static int score_accumulator;
 static SessionState current_state;
+extern volatile int timerEnable;
 
 void Health_Init(void) {
     current_hp = 100;
     total_session_seconds = 0;
     score_accumulator = 0;
     current_state = STATE_CODING; // Assume we start coding right away
+
 }
 
 void Health_Tick(void) {
     if (current_state == STATE_FINISHED) return; 
     total_session_seconds ++;
 
-    if (current_state == STATE_CODING) {
+    if (timerEnable == 1) {
         current_hp -= 1; // This drains 1HP per second. may change later.
         if (current_hp < 0) current_hp = 0;
     }else if (current_state == STATE_BREAK) {
